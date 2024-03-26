@@ -1,0 +1,23 @@
+{
+    "name": "rukavishnikov/php-router",
+    "type": "library",
+    "description": "A PHP router",
+    "keywords": ["php", "router"],
+    "homepage": "https://github.com/Ilya-Ruk/php-router",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ilya Rukavishnikov",
+            "email": "ilya-ndt@mail.ru"
+        }
+    ],
+    "require": {
+        "php": ">=8.0",
+        "psr/http-message": "^2.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Rukavishnikov\\Php\\Router\\": "src/"
+        }
+    }
+}
