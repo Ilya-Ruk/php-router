@@ -47,7 +47,7 @@ final class Router implements RouterInterface
 
             $pattern = @preg_replace_callback(
                 '/{([a-zA-Z_][a-zA-Z0-9_-]*)(?::(.+?))?}/',
-                function ($matches) use (&$attributes) {
+                static function (array $matches) use (&$attributes) {
                     $attributes[$matches[1]] = null;
 
                     return '(' . ($matches[2] ?? '.+?') . ')';
