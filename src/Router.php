@@ -10,85 +10,73 @@ use RuntimeException;
 final class Router implements RouterInterface
 {
     /**
-     * @var array
+     * @var Route[]
      */
-    private array $controllers = [];
+    private array $routeList;
 
     /**
-     * @param array $controllers
+     * @param Route[] $routeList
      */
-    public function __construct(array $controllers)
+    public function __construct(array $routeList)
     {
-        foreach ($controllers as $pattern => $controller) {
-            $this->addController($pattern, $controller);
+        foreach ($routeList as $route) {
+            $this->addRoute($route);
         }
     }
 
     /**
      * @inheritDoc
      */
-    public function getControllerNameAndParseAttributes(ServerRequestInterface $request, array &$attributes): string
+    public function getRoute(ServerRequestInterface $request): Route
     {
-//        $method = $request->getMethod(); // TODO: add method to pattern and check it here
-        $path = $request->getUri()->getPath();
+        $requestMethod = $request->getMethod();
+        $requestPath = urldecode($request->getUri()->getPath());
 
-        foreach ($this->controllers as $pattern => $controller) {
-            $patternOriginalLength = strlen($pattern);
-
-            $pattern = rtrim($pattern, ']'); // Remove trailing ']' from optional parameters
-
-            $optionalCount = $patternOriginalLength - strlen($pattern);
-
-            $pattern = str_replace('[/', '_[/_', $pattern, $replaceCount);
-
-            if ($replaceCount !== $optionalCount) {
-                throw new RuntimeException('Route pattern error!', 500);
+        foreach ($this->routeList as $route) {
+            if ($requestMethod !== $route->method) {
+                continue;
             }
 
             $pattern = @preg_replace_callback(
-                '/{([a-zA-Z_][a-zA-Z0-9_-]*)(?::(.+?))?}/',
-                static function (array $matches) use (&$attributes) {
-                    $attributes[$matches[1]] = null;
-
-                    return '(' . ($matches[2] ?? '.+?') . ')';
+                '~\[?/\{([a-z_][a-z0-9_-]*)(?::(.+?))?\}\]?~i',
+                function ($matches) {
+                    return '/(?P<' . $matches[1] . '>' . ($matches[2] ?? '.+?') . ')';
                 },
-                $pattern
+                $route->pattern
             );
 
-            $pattern = str_replace('_[/_', '(?:/', $pattern);
-            $pattern .= str_repeat(')?', $optionalCount);
+            $pattern = '~^' . $pattern . '$~i';
 
-            $pattern = '~^' . $pattern . '$~';
-
-            $pregMatchResult = @preg_match($pattern, $path, $matches);
+            $pregMatchResult = @preg_match($pattern, $requestPath, $matches);
 
             if ($pregMatchResult === false) {
                 throw new RuntimeException('Route pattern error!', 500);
             }
 
-            if ($pregMatchResult === 1) {
-                $i = 1;
-
-                foreach ($attributes as &$value) {
-                    $value = $matches[$i] ?? null;
-
-                    $i++;
-                }
-
-                return $controller;
+            if ($pregMatchResult === 0) {
+                continue;
             }
+
+            $route->attributes = [];
+
+            foreach ($matches as $key => $value) {
+                if (is_string($key)) {
+                    $route->attributes[$key] = $value;
+                }
+            }
+
+            return $route;
         }
 
-        throw new NotFoundException('Page not found!', 404);
+        throw new NotFoundException('Route not found!', 404);
     }
 
     /**
-     * @param string $pattern
-     * @param string $controller
+     * @param Route $route
      * @return void
      */
-    private function addController(string $pattern, string $controller): void
+    private function addRoute(Route $route): void
     {
-        $this->controllers[$pattern] = $controller;
+        $this->routeList[] = $route;
     }
 }

@@ -10,9 +10,8 @@ interface RouterInterface
 {
     /**
      * @param ServerRequestInterface $request
-     * @param array $attributes
-     * @return string
+     * @return Route
      * @throws NotFoundException
      */
-    public function getControllerNameAndParseAttributes(ServerRequestInterface $request, array &$attributes): string;
+    public function getRoute(ServerRequestInterface $request): Route;
 }
