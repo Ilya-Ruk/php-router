@@ -39,7 +39,7 @@ final class Router implements RouterInterface
 
             $pattern = @preg_replace_callback(
                 '~\[?/\{([a-z_][a-z0-9_-]*)(?::(.+?))?\}\]?~i',
-                function ($matches) {
+                static function (array $matches) {
                     return '/(?P<' . $matches[1] . '>' . ($matches[2] ?? '.+?') . ')';
                 },
                 $route->pattern
