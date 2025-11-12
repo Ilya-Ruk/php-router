@@ -37,10 +37,22 @@ final class Router implements RouterInterface
                 continue;
             }
 
+            /**
+             * /hello - without any params
+             * /hello/{name:[a-zA-Z][a-zA-Z-]*} - without optional params (name required)
+             * /hello/{name:[a-zA-Z][a-zA-Z-]*}/{id:\d+} - without optional params (name and id required)
+             * /hello/{name:[a-zA-Z][a-zA-Z-]*}[/{id:\d+}] - with one optional parameter (name required, id optional)
+             * /hello[/{name:[a-zA-Z][a-zA-Z-]*}][/{id:\d+}] - with two optional params (name and id optional)
+             */
+
             $pattern = @preg_replace_callback(
-                '~\[?/\{([a-z_][a-z0-9_-]*)(?::(.+?))?}]?~i',
+                '~(\[)?/\{([a-z_][a-z0-9_-]*)(?::(.+?))?}(])?~i',
                 static function (array $matches) {
-                    return '/(?P<' . $matches[1] . '>' . ($matches[2] ?? '.+?') . ')';
+                    if (!empty($matches[1]) && !empty($matches[4])) { // Optional parameter
+                        return '(/(?P<' . $matches[2] . '>' . ($matches[3] ?? '.+?') . '))?';
+                    } else { // Required parameter
+                        return '/(?P<' . $matches[2] . '>' . ($matches[3] ?? '.+?') . ')';
+                    }
                 },
                 $route->pattern
             );
