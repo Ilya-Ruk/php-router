@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Rukavishnikov\Php\Router;
 
-use RuntimeException;
+use InvalidArgumentException;
 
 final class Route
 {
@@ -45,11 +45,11 @@ final class Route
         public string $handler,
     ) {
         if (!in_array($method, self::$supportedMethod)) {
-            throw new RuntimeException(sprintf("Method '%s' not supported!", $method), 500);
+            throw new InvalidArgumentException(sprintf("Method '%s' not supported!", $method));
         }
 
         if (!class_exists($handler)) {
-            throw new RuntimeException(sprintf("Handler '%s' not found!", $handler), 500);
+            throw new InvalidArgumentException(sprintf("Handler '%s' not found!", $handler));
         }
     }
 }
