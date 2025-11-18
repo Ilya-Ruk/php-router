@@ -80,7 +80,7 @@ final class Router implements RouterInterface
             return $route;
         }
 
-        throw new NotFoundException('Route not found!', 404);
+        throw new RouteNotFoundException('Route not found!', 404);
     }
 
     /**

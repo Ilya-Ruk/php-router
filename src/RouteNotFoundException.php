@@ -6,6 +6,6 @@ namespace Rukavishnikov\Php\Router;
 
 use Exception;
 
-final class NotFoundException extends Exception
+final class RouteNotFoundException extends Exception
 {
 }
