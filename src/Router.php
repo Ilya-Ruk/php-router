@@ -62,7 +62,7 @@ final class Router implements RouterInterface
             $pregMatchResult = @preg_match($pattern, $requestPath, $matches);
 
             if ($pregMatchResult === false) {
-                throw new RuntimeException('Route pattern error!', 500);
+                throw new RuntimeException('Route pattern error!');
             }
 
             if ($pregMatchResult === 0) {
@@ -80,7 +80,7 @@ final class Router implements RouterInterface
             return $route;
         }
 
-        throw new RouteNotFoundException('Route not found!', 404);
+        throw new RouteNotFoundException('Route not found!');
     }
 
     /**
