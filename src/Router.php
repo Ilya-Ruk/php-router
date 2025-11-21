@@ -33,10 +33,6 @@ final class Router implements RouterInterface
         $requestPath = urldecode($request->getUri()->getPath());
 
         foreach ($this->routeList as $route) {
-            if ($requestMethod !== $route->method) {
-                continue;
-            }
-
             /**
              * /hello - without any params
              * /hello/{name:[a-zA-Z][a-zA-Z-]*} - without optional params (name required)
@@ -67,6 +63,10 @@ final class Router implements RouterInterface
 
             if ($pregMatchResult === 0) {
                 continue;
+            }
+
+            if ($requestMethod !== $route->method) {
+                throw new MethodNotAllowedException('Method not allowed!');
             }
 
             $route->attributes = [];

@@ -11,6 +11,7 @@ interface RouterInterface
     /**
      * @param ServerRequestInterface $request
      * @return Route
+     * @throws MethodNotAllowedException
      * @throws RouteNotFoundException
      */
     public function getRoute(ServerRequestInterface $request): Route;
