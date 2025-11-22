@@ -66,7 +66,13 @@ final class Router implements RouterInterface
             }
 
             if ($requestMethod !== $route->method) {
-                throw new MethodNotAllowedException('Method not allowed!');
+                throw new MethodNotAllowedException(
+                    sprintf(
+                        "Method '%s' not allowed! Allowed method is '%s'.",
+                        $requestMethod,
+                        $route->method
+                    )
+                );
             }
 
             $route->attributes = [];
